@@ -1,3 +1,8 @@
+//
+// Linear System Solver version 1.0.A
+// Created by Seehait Chockthanyawat
+//
+
 #ifndef SIC_FRACTION_INCLUDED
 #define SIC_FRACTION_INCLUDED
 
@@ -29,9 +34,6 @@ protected:
 			bottom *= -1;
 		}
 	}
-
-
-
 public:
 	// default constructor
 	fraction() : top(0), bottom(1) { }
