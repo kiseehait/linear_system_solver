@@ -1,5 +1,5 @@
 //
-// Linear System Solver version 1.0.D
+// Linear System Solver version 1.0.E
 // Created by Seehait Chockthanyawat
 //
 
@@ -107,11 +107,11 @@ void simplify_row(size_t target_row, size_t target_col)
 }
 
 // check that target column is zero column vector or not
-bool is_non_zero_col(size_t target_col)
+bool is_non_zero_col(size_t start_row, size_t target_col)
 {
-	for (size_t col_pointer = 0; col_pointer < total_row; col_pointer++)
+	for (size_t row_pointer = start_row; row_pointer < total_row; row_pointer++)
 	{
-		if (!input[col_pointer][target_col].is_zero()) return true;
+		if (!input[row_pointer][target_col].is_zero()) return true;
 	}
 	return false;
 }
@@ -119,9 +119,9 @@ bool is_non_zero_col(size_t target_col)
 // check that target row is zero row vector or not
 bool is_non_zero_row(size_t target_row)
 {
-	for (size_t row_pointer = 0; row_pointer < total_col - 1; row_pointer++)
+	for (size_t col_pointer = 0; col_pointer < total_col - 1; col_pointer++)
 	{
-		if (!input[target_row][row_pointer].is_zero()) return true;
+		if (!input[target_row][col_pointer].is_zero()) return true;
 	}
 	return false;
 }
@@ -133,29 +133,29 @@ void make_reduced_echelon_form()
 	if (calculation_mode == 0) limit = std::min(total_row, total_col);
 	else if (calculation_mode == 1) limit = std::min(total_row, total_col - 1);
 
-	size_t col_pointer = 0;
-	for (size_t row_pointer = 0; row_pointer < limit; row_pointer++)
+	size_t row_pointer = 0;
+	for (size_t col_pointer = 0; col_pointer < limit; col_pointer++)
 	{
-		if (is_non_zero_col(row_pointer))
+		if (is_non_zero_col(0, col_pointer))
 		{
-			sort_row(col_pointer, row_pointer);
-			reduce_row_forward(row_pointer, col_pointer);
-			col_pointer++;
+			sort_row(row_pointer, col_pointer);
+			reduce_row_forward(col_pointer, row_pointer);
+			row_pointer++;
 		}
 	}
 
-	for (size_t row_pointer = limit; row_pointer > 0; row_pointer--)
+	for (size_t col_pointer = total_col - 1; col_pointer > 0; col_pointer--)
 	{
-		reduce_row_backward(row_pointer - 1);
+		if (is_non_zero_col(0, col_pointer - 1)) reduce_row_backward(col_pointer - 1);
 	}
 
-	col_pointer = 0;
-	for (size_t row_pointer = 0; row_pointer < limit; row_pointer++)
+	row_pointer = 0;
+	for (size_t col_pointer = 0; col_pointer < total_col - 1; col_pointer++)
 	{
-		if (is_non_zero_col(row_pointer))
+		if (is_non_zero_col(row_pointer, col_pointer))
 		{
-			simplify_row(col_pointer, row_pointer);
-			col_pointer++;
+			simplify_row(row_pointer, col_pointer);
+			row_pointer++;
 		}
 	}
 }
@@ -166,12 +166,13 @@ void calculate_output()
 	size_t row_pointer = 0;
 	size_t col_pointer = 0;
 	size_t limit = std::min(total_row, total_col - 1);
+	output.resize(total_col - 1);
 
-	while (col_pointer < limit)
+	while (row_pointer < limit && col_pointer < total_col - 1)
 	{
-		if (is_non_zero_col(col_pointer))
+		if (is_non_zero_col(row_pointer, col_pointer))
 		{
-			if (!input[row_pointer][col_pointer].is_zero()) output[row_pointer] = input[row_pointer][total_col - 1] / input[row_pointer][col_pointer];
+			if (!input[row_pointer][col_pointer].is_zero()) output[col_pointer] = input[row_pointer][total_col - 1] / input[row_pointer][col_pointer];
 			row_pointer++;
 		}
 		col_pointer++;
@@ -205,7 +206,7 @@ void calculate_free_var()
 	size_t col_pointer = 0;
 	while (col_pointer < total_col - 1)
 	{
-		if (!is_non_zero_col(col_pointer)) free_var_pos.push_back(col_pointer);
+		if (!is_non_zero_col(free_var_pos.size(), col_pointer)) free_var_pos.push_back(col_pointer);
 		col_pointer++;
 	}
 
@@ -298,47 +299,50 @@ void print_output()
 
 			if (col_pointer != current_free_var_pos)
 			{
-				if (is_all_free_var_zero(output_pointer) && output[output_pointer].is_zero())
+				if (output_pointer < output.size())
 				{
-					std::cout << "c" << col_pointer << " = " << 0 << std::endl;
-				}
-				else
-				{
-					std::cout << "c" << col_pointer << " = ";
-					if (!output[output_pointer].is_zero())
+					if (output[output_pointer].is_zero() && is_all_free_var_zero(output_pointer))
 					{
-						output[output_pointer].print();
-						for (size_t free_var_pointer = 0; free_var_pointer < total_free_var; free_var_pointer++)
-						{
-							if (!free_var[output_pointer][free_var_pointer].is_zero()) 
-							{
-								std::cout << " + (";
-								free_var[output_pointer][free_var_pointer].print();
-								std::cout << ")c" << free_var_pos[free_var_pointer];
-							}
-						}
-						std::cout << std::endl;
+						std::cout << "c" << col_pointer << " = " << 0 << std::endl;
 					}
 					else
 					{
-						size_t free_var_pointer = 0;
-						while (free_var[output_pointer][free_var_pointer].is_zero()) free_var_pointer++;
-						std::cout << "(";
-						free_var[output_pointer][free_var_pointer].print();
-						std::cout << ")c" << free_var_pos[free_var_pointer];
-						
-						free_var_pointer++;
-						while (free_var_pointer < total_free_var)
+						std::cout << "c" << col_pointer << " = ";
+						if (!output[output_pointer].is_zero())
 						{
-							if (!free_var[output_pointer][free_var_pointer].is_zero())
+							output[output_pointer].print();
+							for (size_t free_var_pointer = 0; free_var_pointer < total_free_var && output_pointer < total_row; free_var_pointer++)
 							{
-								std::cout << " + (";
-								free_var[output_pointer][free_var_pointer].print();
-								std::cout << ")c" << free_var_pos[free_var_pointer];
+								if (!free_var[output_pointer][free_var_pointer].is_zero()) 
+								{
+									std::cout << " + (";
+									free_var[output_pointer][free_var_pointer].print();
+									std::cout << ")c" << free_var_pos[free_var_pointer];
+								}
 							}
-							free_var_pointer++;
+							std::cout << std::endl;
 						}
-						std::cout << std::endl;
+						else
+						{
+							size_t free_var_pointer = 0;
+							while (free_var[output_pointer][free_var_pointer].is_zero()) free_var_pointer++;
+							std::cout << "(";
+							free_var[output_pointer][free_var_pointer].print();
+							std::cout << ")c" << free_var_pos[free_var_pointer];
+							
+							free_var_pointer++;
+							while (free_var_pointer < total_free_var)
+							{
+								if (!free_var[output_pointer][free_var_pointer].is_zero())
+								{
+									std::cout << " + (";
+									free_var[output_pointer][free_var_pointer].print();
+									std::cout << ")c" << free_var_pos[free_var_pointer];
+								}
+								free_var_pointer++;
+							}
+							std::cout << std::endl;
+						}
 					}
 				}
 			}
@@ -360,7 +364,7 @@ void print_output()
 void set_title() {
     char esc_start[] = { 0x1b, ']', '0', ';', 0 };
     char esc_end[] = { 0x07, 0 };
-    std::cout << esc_start << "Linear System Solver version 1.0.d" << esc_end;
+    std::cout << esc_start << "Linear System Solver version 1.0.e" << esc_end;
 }
 
 // clear the console screen
@@ -375,7 +379,7 @@ void print_instruction()
 {
 	clear_screen();
 	printf("%c[1;1H", 0x1B);
-	std::cout << "                       Linear System Solver version 1.0.d                       ";
+	std::cout << "                       Linear System Solver version 1.0.e                       ";
 	std::cout << "                            by Seehait Chockthanyawat                           ";
 	std::cout << std::endl << "--------------------------------------------------------------------------------\n";
 	std::cout << "Please enter: \t-h for solve associate homogeneous system\n\t\t-p for solve particular system\n\t\t-e for calculate reduced echelon form matrix\n\t\t-x or other to exit\n";
