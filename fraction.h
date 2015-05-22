@@ -66,6 +66,18 @@ public:
 		return other.top != top || other.bottom != bottom;
 	}
 
+	bool operator<(const fraction& other)
+	{
+		fraction factor(other);
+		return get_float_value() < factor.get_float_value();
+	}
+
+	bool operator>(const fraction& other)
+	{
+		fraction factor(other);
+		return get_float_value() > factor.get_float_value();
+	}
+
 	fraction& operator+=(const fraction& other)
 	{
 		int other_top = other.top * bottom;
@@ -148,7 +160,13 @@ public:
 
 	void print()
 	{
-		std::cout << top << "/" << bottom << std::endl;
+		if (bottom != 1) std::cout << top << "/" << bottom;
+		else std::cout << top;
+	}
+
+	// special condition
+	bool is_zero() const {
+		return top == 0;
 	}
 };
 
