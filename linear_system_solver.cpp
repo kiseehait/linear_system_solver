@@ -1,5 +1,5 @@
 //
-// Linear System Solver version 1.0.A
+// Linear System Solver version 1.0.B
 // Created by Seehait Chockthanyawat
 //
 
@@ -119,7 +119,7 @@ bool is_non_zero_col(size_t target_col)
 // check that target row is zero row vector or not
 bool is_non_zero_row(size_t target_row)
 {
-	for (size_t row_pointer = 0; row_pointer < total_col; row_pointer++)
+	for (size_t row_pointer = 0; row_pointer < total_col - 1; row_pointer++)
 	{
 		if (!input[target_row][row_pointer].is_zero()) return true;
 	}
@@ -182,20 +182,10 @@ void calculate_output()
 void check_solution_type()
 {
 	solution_type = 0;
-	if (total_row < total_col - 1) solution_type = 1;
-	else if (total_row > total_col - 1)
+	if (total_free_var > 0) solution_type = 1;
+	for (size_t pointer = total_col - 1 - total_free_var; pointer < total_row; pointer++)
 	{
-		for (size_t row_pointer = total_col - 1; row_pointer < total_row; row_pointer++)
-		{
-			if (!input[row_pointer][total_col - 1].is_zero()) solution_type = 2;
-		}
-	}
-	else
-	{
-		for (size_t pointer = 0; pointer < total_row; pointer++)
-		{
-			if (input[pointer][pointer].is_zero()) solution_type = 1;
-		}
+		if (!input[pointer][total_col - 1].is_zero()) solution_type = 2;
 	}
 }
 
@@ -366,7 +356,7 @@ void print_output()
 void set_title() {
     char esc_start[] = { 0x1b, ']', '0', ';', 0 };
     char esc_end[] = { 0x07, 0 };
-    std::cout << esc_start << "Linear System Solver version 1.0.a" << esc_end;
+    std::cout << esc_start << "Linear System Solver version 1.0.b" << esc_end;
 }
 
 // clear the console screen
@@ -381,7 +371,7 @@ void print_instruction()
 {
 	clear_screen();
 	printf("%c[1;1H", 0x1B);
-	std::cout << "                       Linear System Solver version 1.0.a                       ";
+	std::cout << "                       Linear System Solver version 1.0.b                       ";
 	std::cout << "                            by Seehait Chockthanyawat                           ";
 	std::cout << std::endl << "--------------------------------------------------------------------------------\n";
 	std::cout << "Please enter: \t-h for solve associate homogeneous system\n\t\t-p for solve particular system\n\t\t-e for calculate reduced echelon form matrix\n\t\t-x or other to exit\n";
