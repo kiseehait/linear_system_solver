@@ -1,5 +1,5 @@
 //
-// Linear System Solver version 1.0.C
+// Linear System Solver version 1.0.D
 // Created by Seehait Chockthanyawat
 //
 
@@ -234,6 +234,7 @@ void calculate_free_var()
 // check all free variables in the target row is zero or not
 bool is_all_free_var_zero(size_t target_row)
 {
+	if (target_row >= total_row) return true;
 	for (size_t free_var_pointer = 0; free_var_pointer < total_free_var; free_var_pointer++)
 	{
 		if (!free_var[target_row][free_var_pointer].is_zero()) return false;
@@ -288,11 +289,14 @@ void print_output()
 	}
 	else if (solution_type == 1)
 	{
-		size_t free_var_p = free_var_pos[0];
+		size_t free_var_cnt = 0;
+		size_t current_free_var_pos = free_var_pos[free_var_cnt];
 		size_t output_pointer = 0;
 		for (size_t col_pointer = 0; col_pointer < total_col - 1; col_pointer++)
 		{
-			if (col_pointer != free_var_p)
+			if (free_var_cnt < total_free_var) current_free_var_pos = free_var_pos[free_var_cnt];
+
+			if (col_pointer != current_free_var_pos)
 			{
 				if (is_all_free_var_zero(output_pointer) && output[output_pointer].is_zero())
 				{
@@ -341,14 +345,14 @@ void print_output()
 			else
 			{
 				std::cout << "c" << col_pointer << " = any real number\n";
-				free_var_p++;
+				free_var_cnt++;
 			}
 			output_pointer++;
 		}
 	}
 	else if (solution_type == 2)
 	{
-		std::cout << "Error: no solution\n";
+		std::cout << "Error:\tThere is at least one constadiction in this system,\n\tthus this system has no solution.\n";
 	}
 }
 
@@ -356,7 +360,7 @@ void print_output()
 void set_title() {
     char esc_start[] = { 0x1b, ']', '0', ';', 0 };
     char esc_end[] = { 0x07, 0 };
-    std::cout << esc_start << "Linear System Solver version 1.0.c" << esc_end;
+    std::cout << esc_start << "Linear System Solver version 1.0.d" << esc_end;
 }
 
 // clear the console screen
@@ -371,7 +375,7 @@ void print_instruction()
 {
 	clear_screen();
 	printf("%c[1;1H", 0x1B);
-	std::cout << "                       Linear System Solver version 1.0.c                       ";
+	std::cout << "                       Linear System Solver version 1.0.d                       ";
 	std::cout << "                            by Seehait Chockthanyawat                           ";
 	std::cout << std::endl << "--------------------------------------------------------------------------------\n";
 	std::cout << "Please enter: \t-h for solve associate homogeneous system\n\t\t-p for solve particular system\n\t\t-e for calculate reduced echelon form matrix\n\t\t-x or other to exit\n";
