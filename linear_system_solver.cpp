@@ -1,5 +1,5 @@
 //
-// Linear System Solver version 1.0.B
+// Linear System Solver version 1.0.C
 // Created by Seehait Chockthanyawat
 //
 
@@ -356,7 +356,7 @@ void print_output()
 void set_title() {
     char esc_start[] = { 0x1b, ']', '0', ';', 0 };
     char esc_end[] = { 0x07, 0 };
-    std::cout << esc_start << "Linear System Solver version 1.0.b" << esc_end;
+    std::cout << esc_start << "Linear System Solver version 1.0.c" << esc_end;
 }
 
 // clear the console screen
@@ -371,7 +371,7 @@ void print_instruction()
 {
 	clear_screen();
 	printf("%c[1;1H", 0x1B);
-	std::cout << "                       Linear System Solver version 1.0.b                       ";
+	std::cout << "                       Linear System Solver version 1.0.c                       ";
 	std::cout << "                            by Seehait Chockthanyawat                           ";
 	std::cout << std::endl << "--------------------------------------------------------------------------------\n";
 	std::cout << "Please enter: \t-h for solve associate homogeneous system\n\t\t-p for solve particular system\n\t\t-e for calculate reduced echelon form matrix\n\t\t-x or other to exit\n";
@@ -423,13 +423,13 @@ void get_homogeneous_system_input()
 	clear_screen();
 	input.resize(total_row);
 
-	std::cout << "Please enter the matrix\n\n";
+	std::cout << "Please enter the matrix (represent each element in integer or fraction form)\n\n";
 	std::cout << "For example, the equations is\t 4x + 5y + 6z = 0\n\t\t\t\t 8x -3y = 0\n\n";
-	std::cout << "We have an augmented matrix\t|4  5  6 : 0| or |4  5  6|\n\t\t\t\t|8 -3  0 : 0|    |8 -3  0|\n";
+	std::cout << "We have an augmented matrix\t|4  5/2  6 : 0| or |4  5/2  6|\n\t\t\t\t|8   -3  0 : 0|    |8   -3  0|\n";
 	std::cout << "--------------------------------------------------------------------------------\n";
-	std::cout << "You can enter input like this:\t4 5 6\n\t\t\t\t8 -3 0\n";
+	std::cout << "You can enter input like this:\t4 5/2 6\n\t\t\t\t8 -3 0\n";
 	std::cout << "--------------------------------------------------------------------------------\n";
-	std::cout << "Or you can enter input like this: 4 5 6 8 -3 0\n";
+	std::cout << "Or you can enter input like this: 4 5/2 6 8 -3 0\n";
 	std::cout << "--------------------------------------------------------------------------------\n";
 	std::cout << "Input: ";
 	for (size_t row_pointer = 0; row_pointer < total_row; row_pointer++)
@@ -459,13 +459,13 @@ void get_particular_system_input()
 	clear_screen();
 	input.resize(total_row);
 
-	std::cout << "Please enter the matrix\n\n";
+	std::cout << "Please enter the matrix (represent each element in integer or fraction form)\n\n";
 	std::cout << "For example, the equations is\t 4x + 5y + 6z = 7\n\t\t\t\t 8x -3y = 0\n\n";
-	std::cout << "We have an augmented matrix\t|4  5  6 : 7|\n\t\t\t\t|8 -3  0 : 0|\n";
+	std::cout << "We have an augmented matrix\t|4  5/2  6 : 7|\n\t\t\t\t|8   -3  0 : 0|\n";
 	std::cout << "--------------------------------------------------------------------------------\n";
-	std::cout << "You can enter input like this:\t4 5 6 7\n\t\t\t\t8 -3 0 0\n";
+	std::cout << "You can enter input like this:\t4 5/2 6 7\n\t\t\t\t8 -3 0 0\n";
 	std::cout << "--------------------------------------------------------------------------------\n";
-	std::cout << "Or you can enter input like this: 4 5 6 7 8 -3 0 0\n";
+	std::cout << "Or you can enter input like this: 4 5/2 6 7 8 -3 0 0\n";
 	std::cout << "--------------------------------------------------------------------------------\n";
 	std::cout << "Input: ";
 	for (size_t row_pointer = 0; row_pointer < total_row; row_pointer++)
@@ -493,12 +493,12 @@ void get_matrix_input()
 	clear_screen();
 	input.resize(total_row);
 
-	std::cout << "Please enter the matrix\n\n";
-	std::cout << "For example, if the matrix is\t|4  5  6|\n\t\t\t\t|8 -3  0|\n";
+	std::cout << "Please enter the matrix (represent each element in integer or fraction form)\n\n";
+	std::cout << "For example, if the matrix is\t|4  5/2  6|\n\t\t\t\t|8   -3  0|\n";
 	std::cout << "--------------------------------------------------------------------------------\n";
-	std::cout << "You can enter input like this:\t4 5 6\n\t\t\t\t8 -3 0\n";
+	std::cout << "You can enter input like this:\t4 5/2 6\n\t\t\t\t8 -3 0\n";
 	std::cout << "--------------------------------------------------------------------------------\n";
-	std::cout << "Or you can enter input like this: 4 5 6 8 -3 0\n";
+	std::cout << "Or you can enter input like this: 4 5/2 6 8 -3 0\n";
 	std::cout << "--------------------------------------------------------------------------------\n";
 	std::cout << "Input: ";
 	for (size_t row_pointer = 0; row_pointer < total_row; row_pointer++)
