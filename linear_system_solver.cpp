@@ -1,5 +1,5 @@
 //
-// Linear System Solver version 1.0.E
+// Linear System Solver version 1.1.a
 // Created by Seehait Chockthanyawat
 //
 
@@ -364,11 +364,12 @@ void print_output()
 void set_title() {
     char esc_start[] = { 0x1b, ']', '0', ';', 0 };
     char esc_end[] = { 0x07, 0 };
-    std::cout << esc_start << "Linear System Solver version 1.0.e" << esc_end;
+    std::cout << esc_start << "Linear System Solver version 1.1.a" << esc_end;
 }
 
 // clear the console screen
 void clear_screen() {
+	printf("%c[1;1H", 0x1B);
     for (int line_pointer = 0; line_pointer < 24; line_pointer++) std::cout << "                                                                                ";
     printf("%c[1J", 0x1B);
     printf("%c[1;1H", 0x1B);
@@ -379,7 +380,7 @@ void print_instruction()
 {
 	clear_screen();
 	printf("%c[1;1H", 0x1B);
-	std::cout << "                       Linear System Solver version 1.0.e                       ";
+	std::cout << "                       Linear System Solver version 1.1.a                       ";
 	std::cout << "                            by Seehait Chockthanyawat                           ";
 	std::cout << std::endl << "--------------------------------------------------------------------------------\n";
 	std::cout << "Please enter: \t-h for solve associate homogeneous system\n\t\t-p for solve particular system\n\t\t-e for calculate reduced echelon form matrix\n\t\t-x or other to exit\n";
